@@ -9,7 +9,7 @@ steps:
       - -c
       - |
         echo "$_DOTENV" > .env
-        echo "$_FIREBASE_KEY" > firebase-adminsdk.json
+        mkdir -p interior_planner && echo "$_FIREBASE_KEY" > interior_planner/firebase-adminsdk.json
         docker build -t gcr.io/$PROJECT_ID/interior-planner-api .
 
   - name: 'gcr.io/cloud-builders/docker'
