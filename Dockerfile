@@ -11,6 +11,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy project files
 COPY . .
+COPY interior_planner/.env .env
 
 # Collect static files
 RUN python interior_planner/manage.py collectstatic --noinput
