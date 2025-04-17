@@ -9,16 +9,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(find_dotenv() or ".env")
 
 # Firebase Configuration
-FIREBASE_CREDENTIALS_PATH = os.getenv('FIREBASE_CREDENTIALS_PATH')
 FIREBASE_STORAGE_BUCKET = os.getenv('FIREBASE_STORAGE_BUCKET')
+FIREBASE_JSON_PATH = BASE_DIR / 'firebase-adminsdk.json'
 
-# Validate Firebase configuration before initialization
-if not all([FIREBASE_CREDENTIALS_PATH, FIREBASE_STORAGE_BUCKET]):
-    raise ValueError("Missing Firebase configuration in .env file")
+# Validate Firebase configuration
+if not FIREBASE_JSON_PATH.exists():
+    raise FileNotFoundError(f"Firebase credential file not found at {FIREBASE_JSON_PATH}")
+if not FIREBASE_STORAGE_BUCKET:
+    raise ValueError("Missing FIREBASE_STORAGE_BUCKET in .env file")
 
 # Initialize Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+    cred = credentials.Certificate(str(FIREBASE_JSON_PATH))
     firebase_admin.initialize_app(cred, {
         'storageBucket': FIREBASE_STORAGE_BUCKET
     })
