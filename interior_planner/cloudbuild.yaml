@@ -3,7 +3,7 @@ options:
 
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-f', 'interion_planner/Dockerfile', '-t', 'gcr.io/$PROJECT_ID/interior-planner-api', '.']
+    args: ['build', '-f', 'interior_planner/Dockerfile', '-t', 'gcr.io/$PROJECT_ID/interior-planner-api', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/interior-planner-api']
