@@ -6,7 +6,7 @@ from firebase_admin import credentials
 
 # Load environment variables
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(find_dotenv() or ".env")
+loaded = load_dotenv(Path(".env"))
 
 # Firebase Configuration
 FIREBASE_STORAGE_BUCKET = os.getenv('FIREBASE_STORAGE_BUCKET')
@@ -28,7 +28,7 @@ if not firebase_admin._apps:
 # Security settings
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-for-dev-only')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -123,3 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
