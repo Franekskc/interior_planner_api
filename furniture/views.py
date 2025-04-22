@@ -15,9 +15,9 @@ def furniture_list(request):
     transformed = [{
         'id': idx,
         'name': item.get('name'),
-        'model_url': item.get('model_url'),
-        'thumbnail_url': item.get('thumbnail_url'),
-        'created_at': item.get('created_at').isoformat() if item.get('created_at') else None
+        'modelUrl': item.get('model_url'),
+        'thumbnailUrl': item.get('thumbnail_url'),
+        'createdAt': item.get('created_at').isoformat() if item.get('created_at') else None
     } for idx, item in enumerate(furniture)]
     
     return Response(transformed, status=status.HTTP_200_OK)
