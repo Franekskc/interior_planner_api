@@ -1,12 +1,12 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials
 
 # Load environment variables
 BASE_DIR = Path(__file__).resolve().parent.parent
-loaded = load_dotenv(Path(".env"))
+loaded = load_dotenv()
 
 # Firebase Configuration
 FIREBASE_STORAGE_BUCKET = os.getenv('FIREBASE_STORAGE_BUCKET')

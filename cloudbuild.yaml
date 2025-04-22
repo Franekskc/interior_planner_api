@@ -2,7 +2,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-  # Step 1: Zapisz sekrety bezpośrednio w katalogu głównym
+  # Step 1: Create secrets
   - name: 'ubuntu'
     secretEnv: ['DOTENV', 'FIREBASE_KEY']
     entrypoint: 'bash'
@@ -11,8 +11,7 @@ steps:
       - |
         echo "Saving secrets into files..."
         echo "$$DOTENV" > .env
-        mkdir -p interior_planner
-        echo "$$FIREBASE_KEY" > interior_planner/firebase-adminsdk.json
+        echo "$$FIREBASE_KEY" > firebase-adminsdk.json
 
   # Step 2: Build Docker image
   - name: 'gcr.io/cloud-builders/docker'

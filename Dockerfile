@@ -13,9 +13,9 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # Collect static files
-RUN python interior_planner/manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 
 # Cloud Run expects the app to listen on port 8080
 EXPOSE 8080
 
-CMD ["gunicorn", "interior_planner.interior_planner.wsgi:application", "--bind", "0.0.0.0:8080"]
+CMD ["gunicorn", "interior_planner.wsgi:application", "--bind", "0.0.0.0:8080"]
