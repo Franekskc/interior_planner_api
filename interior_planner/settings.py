@@ -27,7 +27,7 @@ if not firebase_admin._apps:
 
 # Security settings
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-for-dev-only')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'TRUE'
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -122,6 +122,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://interior-planner-api-513969926015.europe-central2.run.app",
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
