@@ -40,52 +40,21 @@ class FurnitureDetailView(APIView):
 class BaseTextureListView(APIView):
     ASSET_IDS = {}
 
-    def get_texture_data(self, asset_id, include_texture=False):
-        url = f"https://ambientcg.com/api/v2/full_json?id={asset_id}&include=downloadData"
-        response = requests.get(url)
-        if response.status_code != 200:
-            return None
-
-        data = response.json()
-        if not data.get("foundAssets"):
-            return None
-
-        asset = data["foundAssets"][0]
-        preview = asset.get("previewImage", {})
-        texture_links = self.extract_texture_links(asset) if include_texture else None
-
-        result = {
-            "id": asset["assetId"],
-            "imageUrl": preview.get("256-JPG-FFFFFF"),
-        }
-
-        if include_texture:
-            result["texture"] = texture_links
-
-        return result
-
-    def extract_texture_links(self, asset):
-        preview_links = asset.get("previewLinks", [])
-        if not preview_links:
-            return {}
-
-        query = urlparse(preview_links[0]["url"]).fragment
-        params = parse_qs(query)
-        keys_dict = {
-            "color": "color_url",
-            "displacement": "displacement_url",
-            "normal": "normal_url",
-            "roughness": "roughness_url", 
-            "ambientOcclusion": "ambientocclusion_url"
-        }
-        return {my_key: params.get(outside_key, [""])[0] for my_key, outside_key in keys_dict.items()}
-
     def get(self, request):
         results = []
         for asset_id in self.ASSET_IDS:
-            texture_data = self.get_texture_data(asset_id)
-            if texture_data:
-                results.append(texture_data)
+            url = f"https://ambientcg.com/api/v2/full_json?id={asset_id}"
+            response = requests.get(url)
+            if response.status_code != 200:
+                continue
+
+            data = response.json()
+            asset = data.get("foundAssets", [{}])[0]
+            preview = asset.get("previewImage", {})
+            results.append({
+                "id": asset.get("assetId"),
+                "imageUrl": preview.get("256-JPG-FFFFFF")
+            })
         return Response(results)
 
 
@@ -94,13 +63,32 @@ class BaseTextureDetailView(BaseTextureListView):
 
     def get(self, request, texture_id):
         if texture_id not in self.ALLOWED_IDS:
-            return Response({"error": f"Texture '{texture_id}' not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Not found"}, status=404)
 
-        texture_data = self.get_texture_data(texture_id, include_texture=True)
-        if texture_data:
-            return Response(texture_data)
+        url = f"https://ambientcg.com/api/v2/full_json?id={texture_id}&include=downloadData"
+        response = requests.get(url)
+        if response.status_code != 200:
+            return Response({"error": "Failed to fetch data"}, status=502)
 
-        return Response({"error": "Failed to fetch texture"}, status=status.HTTP_502_BAD_GATEWAY)
+        data = response.json()
+        asset = data.get("foundAssets", [{}])[0]
+        preview_links = asset.get("previewLinks", [])
+        if not preview_links:
+            return Response({"error": "Missing texture links"}, status=502)
+
+        fragment = urlparse(preview_links[0]["url"]).fragment
+        params = parse_qs(fragment)
+
+        keys = {
+            "color": "color_url",
+            "displacement": "displacement_url",
+            "normal": "normal_url",
+            "roughness": "roughness_url",
+            "ambientOcclusion": "ambientocclusion_url"
+        }
+
+        texture_data = {k: params.get(v, [""])[0] for k, v in keys.items()}
+        return Response(texture_data)
 
 # Walls
 class WallTextureListView(BaseTextureListView):
@@ -116,4 +104,3 @@ class FloorTextureListView(BaseTextureListView):
 
 class FloorTextureDetailView(BaseTextureDetailView):
     ALLOWED_IDS = FLOOR_TEXTURE_IDS
-    
